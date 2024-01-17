@@ -3,3 +3,5 @@ node_modules/
 note.txt
 
 src/public/css/
+
+.husky
