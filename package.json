@@ -28,9 +28,9 @@
   "lint-staged": {
     "src/**/*.{js,json,scss}": "prettier --write --tab-width 4 --single-quote --trailing-comma all"
   },
-  "husky":{
+  "husky": {
     "hooks": {
-      "pre-commit": "npm run beautiful"
+      "pre-commit": "lint-staged"
     }
   },
   "dependencies": {
