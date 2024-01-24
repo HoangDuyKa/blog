@@ -1,0 +1,88 @@
+<div class="mt-4">
+    <h3>Trash</h3>
+    <a class="btn btn-primary ml-auto"  href="/me/stored/courses">My course</a>
+    
+      <table class="table mt-4">
+      <thead>
+          <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Deletion time</th>
+          <th scope="col" colspan="3">Level</th>
+          </tr>
+      </thead>
+      <tbody>
+          {{#each courses}}
+          <tr>
+          <th scope="row">{{sum @index 1}}</th>
+          <td>{{this.name}}</td>
+          <td>{{this.deletedAt}}</td>
+          <td>{{this.level}}</td>
+          <td><a href="" class="btn btn-link btn-restore" data-id="{{this._id}}">Restore</a></td>
+          <td><a href="" class="btn btn-link" data-toggle="modal" data-id="{{this._id}}" data-target="#delete-course-modal" >Delete forever</a></td>
+          </tr>
+          {{else}}
+          <td>Empty trash</td>
+          {{/each}}
+      </tbody>
+  </table>
+</div>
+
+
+{{!-- Confirm delete course --}}
+<div id="delete-course-modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Warning!!!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>You can not restore after deleting, are you sure?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-delete-course" type="button" class="btn btn-danger">Delete Forever</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+    {{!-- form delete course hidden --}}
+    <form name="form-restore-course" method="POST" action="" ></form>
+    <form name="form-delete-course" method="POST" action="" ></form>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var id;
+        var formDelete = document.forms['form-delete-course']
+        var btnDeleteCourse = document.getElementById('btn-delete-course');
+        var restoreBtn = $('.btn-restore');
+        var formRestore = document.forms['form-restore-course']
+
+
+        //When dialog confirm clicked
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            id = button.data('id');
+        })
+        btnDeleteCourse.onclick = function(){
+            formDelete.action= '/courses/'+  id  +'/force?_method=DELETE';
+            formDelete.submit();
+        }
+
+        //restore btn clicked
+        restoreBtn.click(function (e){
+            //remove default even for tag a
+            e.preventDefault();
+            var courseId = $(this).data('id');
+            formRestore.action = '/courses/'+  courseId  +'/restore/?_method=PATCH';
+            formRestore.submit();
+
+        })
+
+            
+})
+</script>

@@ -23,15 +23,63 @@ class SiteController {
         // console.log(req.body);
         // // Respond with the JSON data
         // res.json(req.body);
-        const formData = req.body;
-        formData.image = `https://files.fullstack.edu.vn/f8-prod/courses/6.png`;
+        req.body.image = `https://files.fullstack.edu.vn/f8-prod/courses/6.png`;
         // formData.slug = slug(formData.name)
 
-        const course = new Course(formData);
-        course
-            .save()
-            .then(() => res.redirect('/'))
-            .catch((error) => {});
+        // const course = new Course(req.body);
+        // course.save()
+        //     .then(() => res.redirect('/me/stored/courses'))
+        //     .catch((error) => {});
+        res.json(req.body);
+    }
+
+    //[GET] /courses/:id/edit
+    edit(req, res, next) {
+        Course.findById(req.params.id).then((courses) =>
+            res.render('courses/edit', {
+                courses: mongooseToObject(courses),
+            }),
+        );
+    }
+    //[PUT] /courses/:id
+    update(req, res, next) {
+        Course.updateOne({ _id: req.params.id }, req.body)
+            .then(() => res.redirect('/me/stored/courses'))
+            .catch(next);
+    }
+
+    //[DELETE] /courses/:id
+    delete(req, res, next) {
+        Course.delete({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    //[DELETE] /courses/:id/force
+    destroy(req, res, next) {
+        Course.deleteOne({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    //[PATCH] /courses/:id/restore
+    restore(req, res, next) {
+        Course.restore({ _id: req.params.id })
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    //[PATCH] /courses/handle-form-actions
+    handleFormActions(req, res, next) {
+        switch (req.body.action) {
+            case 'delete':
+                Course.delete({ _id: { $in: req.body.courseIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                break;
+            default:
+                res.json({ message: 'action is invalid' });
+        }
     }
 }
 
